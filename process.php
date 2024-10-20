@@ -9,7 +9,9 @@
       $data .= "-------------------------------------\n";
 
       // Write the data to input.txt
-      file_put_contents("input.txt", $data, FILE_APPEND);
+      $input_file = "input.txt";
+//Crrate File If Not Exits
+      file_put_contents("input.txt", $data, FILE_APPEND | LOCK_EX);
 
       echo "<p>Saved to input.txt</p>";
     }
