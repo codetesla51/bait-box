@@ -11,7 +11,7 @@ if (php_sapi_name() !== "cli") {
 echo "\033[31m";
 system('toilet -f standard "BaitBOX"');
 echo "\033[0m";
-echo "\033[31mFor Educational Purposses Only\n\033[0m";
+echo "\033[31mNote : For Educational Purposses Only\n\033[0m";
 // Start PHP's built-in server to host the form locally
 $host = "localhost";
 $port = "8000";
@@ -30,9 +30,10 @@ $time_taken = ($end_time - $start_time) * 1000;
 
 // Check if the server started
 if ($server) {
-  echo "Starting server on http://$host:$port...\n";
-    echo "\033[32mServer started successfully in " . round($time_taken, 2) . " milliseconds.\n\033[0m";
-
+  echo "Starting server on http://$host:$port\n";
+  echo "\033[32mServer started successfully in " .
+    round($time_taken, 2) .
+    " milliseconds.\n\033[0m";
 } else {
   echo "\033[31mError: Server not started.\n\033[0m";
 }
