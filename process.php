@@ -10,8 +10,12 @@
 
       // Write the data to input.txt
       $input_file = "input.txt";
-//Crrate File If Not Exits
-      file_put_contents("input.txt", $data, FILE_APPEND | LOCK_EX);
+      if (!file_exists($input_file)) {
+        touch("input.txt");
+      } else {
+        file_put_contents("input.txt", $data, FILE_APPEND 
+      );
+      }
 
       echo "<p>Saved to input.txt</p>";
     }
