@@ -1,4 +1,4 @@
-    <?php if (isset($_POST["submit"])) {
+    <?php if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $user_name = $_POST["user_name"];
       $user_pass = $_POST["password"];
 
