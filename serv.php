@@ -58,17 +58,20 @@ $ssh_output_file = "ssh_output.txt";
 // Wait for the SSH tunnel to establish and output the URL
 $tunnel_url = null;
 while ($tunnel_url === null) {
-    if (file_exists($ssh_output_file)) {
-        $lines = file($ssh_output_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            if (strpos($line, 'http') !== false) {
-                $tunnel_url = $line;
-                echo "\033[32mTunnel URL: $tunnel_url\033[0m\n";
-                break;
-            }
-        }
+  if (file_exists($ssh_output_file)) {
+    $lines = file(
+      $ssh_output_file,
+      FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+    );
+    foreach ($lines as $line) {
+      if (strpos($line, "http") !== false) {
+        $tunnel_url = $line;
+        echo "\033[32mTunnel URL: $tunnel_url\033[0m\n";
+        break;
+      }
     }
-    sleep(1); // Wait for SSH output to be written
+  }
+  sleep(1); // Wait for SSH output to be written
 }
 
 // Start listening for input in the input.txt file
@@ -97,3 +100,4 @@ while (true) {
   // Pause for 2 seconds before checking again
   sleep(2);
 }
+
