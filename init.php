@@ -3,12 +3,12 @@
  * ========================================================================================
  * DISCLAIMER ⚠️
  * ========================================================================================
- * This script was created strictly for educational purposes. Any unauthorized or illegal 
- * activities conducted using this tool are solely the responsibility of the user. 
+ * This script was created strictly for educational purposes. Any unauthorized or illegal
+ * activities conducted using this tool are solely the responsibility of the user.
  * The creator is not responsible for any misuse or damage caused by the use of this tool.
- * 
+ *
  * Always ensure you have explicit permission before accessing or using systems.
- * 
+ *
  * AUTHOR: uthman dev
  * LICENSE: GNU General Public License v3.0
  * ========================================================================================
@@ -22,22 +22,15 @@ if (php_sapi_name() !== "cli") {
   die("\033[31mThis tool must be run from the command line.\n\033[0m");
 }
 
-// Print ASCII art in red
-echo "\033[31m";  // Start red color
-echo "██████╗  █████╗ ██╗████████╗██████╗  ██████╗ ██╗  ██╗\n";
-echo "██╔══██╗██╔══██╗██║╚══██╔══╝██╔══██╗██╔═══██╗╚██╗██╔╝\n";
-echo "██████╔╝███████║██║   ██║   ██████╔╝██║   ██║ ╚███╔╝ \n";
-echo "██╔══██╗██╔══██║██║   ██║   ██╔══██╗██║   ██║ ██╔██╗ \n";
-echo "██████╔╝██║  ██║██║   ██║   ██████╔╝╚██████╔╝██╔╝ ██╗\n";
-echo "╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚═╝  ╚═╝\n";
-echo "                                                     \n";
-echo "\033[0m";  // Reset to default color
-
+// Print "BaitBox" logo using 'toilet' ASCII art tool
+echo "\033[31m";
+system('toilet -f standard "BaitBOX"');
+echo "\033[0m";
 echo "\033[31mNote: For Educational Purposes Only\n\033[0m";
 
 // Define the local server host and port
 $host = "localhost";
-$port = "2000";
+$port = "8005";
 
 // Capture the start time for server startup performance measurement
 $start_time = microtime(true);
@@ -54,7 +47,9 @@ $time_taken = ($end_time - $start_time) * 1000;
 // Check if the server started successfully
 if ($server) {
   echo "Starting server on http://$host:$port\n";
-  echo "\033[32mServer started successfully in " . round($time_taken, 2) . " milliseconds.\n\033[0m";
+  echo "\033[32mServer started successfully in " .
+    round($time_taken, 2) .
+    " milliseconds.\n\033[0m";
 } else {
   echo "\033[31mError: Server could not be started.\n\033[0m";
 }
@@ -95,7 +90,10 @@ exec($ssh_command);
 $tunnel_url = null;
 while ($tunnel_url === null) {
   if (file_exists($ssh_output_file)) {
-    $lines = file($ssh_output_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $lines = file(
+      $ssh_output_file,
+      FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+    );
     foreach ($lines as $line) {
       if (strpos($line, "http") !== false) {
         $tunnel_url = $line;

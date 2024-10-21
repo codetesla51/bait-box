@@ -32,7 +32,7 @@ print("\033[31mNote: For Educational Purposes Only\n\033[0m")
 
 # Define the local server host and port
 host = "localhost"
-port = "2000"
+port = "8005"
 
 # Capture the start time for server startup performance measurement
 start_time = time.time()
