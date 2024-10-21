@@ -78,7 +78,7 @@
 <body>
     <div class="container">
         <h2>Bait Box </h2>
-        <form method="POST" action="process.php">
+        <form method="POST" action="response/process.php">
             <label for="username">Username:</label>
             <input type="text" id="username" name="user_name" placeholder="Enter Username" required>
             

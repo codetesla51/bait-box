@@ -1,2 +1,3 @@
-Forwarding HTTP traffic from https://707ff19ec12d88a3e071e27178bc515e.serveo.net
-Read from remote host serveo.net: Software caused connection abort
+Pseudo-terminal will not be allocated because stdin is not a terminal.
+[32mForwarding HTTP traffic from https://5822a9a39caf255119958238e9d5108a.serveo.net
+[0m

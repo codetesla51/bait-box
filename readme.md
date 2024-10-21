@@ -10,6 +10,10 @@ This script was created **for educational purposes only** and should be used wis
 
 **Bait Box** is a phishing script that follows common phishing techniques, but with the flexibility to design your own templates. Unlike other phishing tools that provide pre-made templates, Bait Box allows you to create fully customizable forms. By using Serveo for tunneling, you can avoid detection due to its SSL certificates.
 
+### Current Version
+
+**Version:** 1.0.0
+
 ### Features
 
 - Self-hosting on **Serveo** and **localhost**
@@ -17,6 +21,9 @@ This script was created **for educational purposes only** and should be used wis
 - SSL certificates for generated links
 - Phishing form customization (design your own phishing websites)
 - Supports PHP and Python for scripting
+- Automatic server startup with PHP’s built-in server
+- SSH tunneling for secure access to the phishing site
+- Logging of user inputs for later retrieval
 
 ## Installation
 
@@ -30,4 +37,14 @@ Before you begin, ensure you have the following prerequisites installed:
 To get started, clone this repository using the command:
 
 ```bash
-git clone https://github.com/your-repo-link-here/baitbox.git
+git clone https://github.com/codetesla51/bait-box.git
+cd bait-box
+```
+** Initialize script php version**
+```bash
+php init.php
+```
+** Initialize script php version**
+```bash
+python init.py
+
