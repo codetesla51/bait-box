@@ -22,16 +22,26 @@ if (php_sapi_name() !== "cli") {
   die("\033[31mThis tool must be run from the command line.\n\033[0m");
 }
 
-// Print "BaitBox" logo using 'toilet' ASCII art tool
-echo "\033[31m";
-system('toilet -f standard "BaitBOX"');
-echo "\033[0m";
-echo "\033[31mNote: For Educational Purposes Only\n\033[0m";
+// Print ASCII art in red
+echo "\033[31m"; // Start red color
+echo "██████╗  █████╗ ██╗████████╗██████╗  ██████╗ ██╗  ██╗\n";
+echo "██╔══██╗██╔══██╗██║╚══██╔══╝██╔══██╗██╔═══██╗╚██╗██╔╝\n";
+echo "██████╔╝███████║██║   ██║   ██████╔╝██║   ██║ ╚███╔╝ \n";
+echo "██╔══██╗██╔══██║██║   ██║   ██╔══██╗██║   ██║ ██╔██╗ \n";
+echo "██████╔╝██║  ██║██║   ██║   ██████╔╝╚██████╔╝██╔╝ ██╗\n";
+echo "╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚═╝  ╚═╝\n";
+echo "                                                     \n";
+echo "\033[0m"; // Reset to default color
 
+echo "\033[31mNote: For Educational Purposes Only\n\033[0m";
+//Function To Get Random poort
+function get_random_port()
+{
+  return rand(1024, 65535);
+}
 // Define the local server host and port
 $host = "localhost";
-$port = "8005";
-
+$port = get_random_port();
 // Capture the start time for server startup performance measurement
 $start_time = microtime(true);
 
@@ -55,7 +65,7 @@ if ($server) {
 }
 
 // Define the path to the form file (index.php)
-$form_file = "index.php";
+$form_file = "index.html";
 
 // Check if the form file exists
 if (!file_exists($form_file)) {

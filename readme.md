@@ -1,8 +1,8 @@
 # Bait Box
 
-**Bait Box** is a PHP and Python-based phishing script designed for educational purposes. This script enables users to create phishing templates, manage tunneling with Serveo, and customize their own forms. **Use it responsibly.**
+**Bait Box** is a PHP-based phishing script designed for educational purposes. This script enables users to create phishing templates, manage tunneling with Serveo, and customize their own forms. **Use it responsibly.**
 
-## Disclaimer ⚠️
+## Disclaimer
 
 This script was created **for educational purposes only** and should be used wisely. Any misuse of this tool, including illegal activities, is not the responsibility of the script's creator. You are solely responsible for your actions when using this script.
 
@@ -20,7 +20,7 @@ This script was created **for educational purposes only** and should be used wis
 - Manual port changing for flexibility
 - SSL certificates for generated links
 - Phishing form customization (design your own phishing websites)
-- Supports PHP and Python for scripting
+- Supports PHP for scripting
 - Automatic server startup with PHP’s built-in server
 - SSH tunneling for secure access to the phishing site
 - Logging of user inputs for later retrieval
@@ -30,7 +30,6 @@ This script was created **for educational purposes only** and should be used wis
 Before you begin, ensure you have the following prerequisites installed:
 
 - **PHP 8** or higher
-- **Python 3** or higher
 
 ### Clone the Repository
 
@@ -39,12 +38,4 @@ To get started, clone this repository using the command:
 ```bash
 git clone https://github.com/codetesla51/bait-box.git
 cd bait-box
-```
-** Initialize script php version**
-```bash
 php init.php
-```
-** Initialize script php version**
-```bash
-python init.py
-
