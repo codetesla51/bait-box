@@ -1,8 +1,2 @@
-Pseudo-terminal will not be allocated because stdin is not a terminal.
-[32mForwarding HTTP traffic from https://5b8af7169d973ad7d8a18ed6c4e1c606.serveo.net
-[0mHTTP request from 102.88.69.136 to https://5b8af7169d973ad7d8a18ed6c4e1c606.serveo.net/
-HTTP request from 102.88.69.136 to https://5b8af7169d973ad7d8a18ed6c4e1c606.serveo.net/favicon.ico
-HTTP request from 102.88.69.136 to https://5b8af7169d973ad7d8a18ed6c4e1c606.serveo.net/process.php
-HTTP request from 102.88.69.136 to https://5b8af7169d973ad7d8a18ed6c4e1c606.serveo.net/process.php
+Forwarding HTTP traffic from https://707ff19ec12d88a3e071e27178bc515e.serveo.net
 Read from remote host serveo.net: Software caused connection abort
-client_loop: send disconnect: Broken pipe
