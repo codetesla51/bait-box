@@ -1,3 +1,3 @@
 Pseudo-terminal will not be allocated because stdin is not a terminal.
-[32mForwarding HTTP traffic from https://6c14c6ed34e98dbee54aed41b9d55785.serveo.net
+[32mForwarding HTTP traffic from https://690457ad3eff2761831af620c835ecb6.serveo.net
 [0m

